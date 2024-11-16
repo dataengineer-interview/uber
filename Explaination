@@ -1,0 +1,113 @@
+Question 1: Python Program - String Subset Check
+Narration: Our first question is a Python coding challenge. Given two strings, determine if the "child" string is a subset of the "parent" string, meaning it contains all the words from the parent string in any order.
+
+Example: Here’s an example input:
+
+python
+Copy code
+Parent_String = "The brown fox quickly jumped over the lazy dog that was sitting on a bench in front of the fox"
+Child_String1 = "The quick brown fox jumps over the lazy dog"  # Not a subset
+Child_String2 = "The brown dog was lazy dog"  # Is a subset
+Solution Explanation:
+
+Convert to Word Lists: Convert both strings to lowercase and split them into words.
+Count Words: Use Counter from collections to get the frequency of each word in both strings.
+Check Word Frequency: Ensure each word in the child appears in the parent with the same or higher frequency.
+Python Code: Here’s the Python code to solve this:
+
+python
+Copy code
+from collections import Counter
+
+def is_subset(parent, child):
+    parent_count = Counter(parent.lower().split())
+    child_count = Counter(child.lower().split())
+    for word, count in child_count.items():
+        if parent_count[word] < count:
+            return False
+    return True
+
+# Testing
+parent_string = "The brown fox quickly jumped over the lazy dog..."
+print(is_subset(parent_string, "The quick brown fox jumps..."))  # False
+print(is_subset(parent_string, "The brown dog was lazy dog"))  # True
+Question 2: SQL Query Questions
+Narration: Next, let’s look at SQL queries involving cars, dealerships, and orders tables.
+
+a. Date-Wise Average Sales for Each Brand
+Problem: Calculate the average sales for each brand on a date-by-date basis. Average sales are calculated as PRICE_IN_DOLLARS * QUANTITY.
+
+SQL Query:
+
+sql
+Copy code
+SELECT O.ORDER_DATE, C.BRAND, AVG(O.PRICE_IN_DOLLARS * O.QUANTITY) AS Avg_Sales
+FROM ORDERS O
+JOIN CARS C ON O.CAR_ID = C.ID
+GROUP BY O.ORDER_DATE, C.BRAND
+ORDER BY O.ORDER_DATE, C.BRAND;
+b. Top 5 Cars Sold by Each Dealer Based on Quantities
+Problem: Retrieve the top 5 cars by quantity for each dealer.
+
+SQL Query:
+
+sql
+Copy code
+SELECT D.DEALER_NAME, C.BRAND, C.MODEL, O.QUANTITY,
+       ROW_NUMBER() OVER (PARTITION BY O.DEALER_ID ORDER BY O.QUANTITY DESC) AS rank
+FROM ORDERS O
+JOIN CARS C ON O.CAR_ID = C.ID
+JOIN DEALERS D ON O.DEALER_ID = D.ID
+WHERE rank <= 5
+ORDER BY D.DEALER_NAME, rank;
+c. Dealers Selling Both Chevrolet & Audi But Not Ford
+Problem: Identify dealers who sold Chevrolet and Audi cars but no Ford cars.
+
+SQL Query:
+
+sql
+Copy code
+SELECT D.DEALER_NAME
+FROM ORDERS O
+JOIN CARS C ON O.CAR_ID = C.ID
+JOIN DEALERS D ON O.DEALER_ID = D.ID
+GROUP BY D.DEALER_NAME
+HAVING SUM(CASE WHEN C.BRAND = 'Chevrolet' THEN 1 ELSE 0 END) > 0
+   AND SUM(CASE WHEN C.BRAND = 'Audi' THEN 1 ELSE 0 END) > 0
+   AND SUM(CASE WHEN C.BRAND = 'Ford' THEN 1 ELSE 0 END) = 0;
+Question 3: SQL Join Behavior with NULLs
+Narration: Our final question explores SQL join behavior with NULL values. We’ll use sample tables A and B.
+
+Data:
+
+sql
+Copy code
+Table A
+id
+1
+1
+NULL
+
+Table B
+id
+1
+1
+NULL
+NULL
+Join Types and Results:
+
+B LEFT JOIN A on A.id = B.id: Includes all rows from B and matches from A. Expected Output: 4 rows.
+B INNER JOIN A on A.id = B.id: Only rows with matching IDs. Expected Output: 2 rows.
+B FULL JOIN A on A.id = B.id: Combines all rows from both tables, matching where possible. Expected Output: 4 rows.
+SQL Queries:
+
+sql
+Copy code
+-- B LEFT JOIN A
+SELECT * FROM B LEFT JOIN A ON B.id = A.id;
+
+-- B INNER JOIN A
+SELECT * FROM B INNER JOIN A ON B.id = A.id;
+
+-- B FULL JOIN A
+SELECT * FROM B FULL JOIN A ON B.id = A.id;
